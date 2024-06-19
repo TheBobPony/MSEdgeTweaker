@@ -9,7 +9,7 @@ set Author=TheBobPony
 set CreationDate=2024-06-19
 
 REM Version Information
-set version=v24-06-19.1
+set version=v24-06-19.2
 set UpdateDate=2024-06-19
 set CreatorOfChange=SmearODeer
 set ReasonForUpdate=Improved readability and added features
@@ -58,6 +58,12 @@ if %errorlevel%==0 (
     goto MainMenu
 )
 exit /b
+
+REM Elevate script to run as admin if not already running as admin
+PowerShell.exe -Command "sc.exe pause rpcss > $null; if ($LASTEXITCODE -eq 5) {Start-Process -Verb 'RunAs' '%~0' %*; exit 0}"
+if not "%errorlevel%"=="0" (
+    goto :end0
+)
 
 REM Script Execution Starts Here
 call :Log "Script execution started at %Timestamp%"
@@ -393,3 +399,6 @@ if "%regd3%"=="" timeout 5 & goto MainMenu
 reg delete HKLM\Software\Policies\Microsoft\Edge /v %regd3% /f
 timeout 5
 goto MainMenu
+
+:end0
+exit /b
