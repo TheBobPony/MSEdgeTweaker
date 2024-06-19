@@ -1,0 +1,8 @@
+# If you can read this, please visit https://github.com/TheBobPony/MSEdgeTweaker for instructions on how to run the MSEdge Tweaker script!
+
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process PowerShell -WindowStyle Hidden -Verb RunAs '-NoProfile -ExecutionPolicy Bypass -Command irm fixedge.today|iex';
+    exit;
+}
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/TheBobPony/MSEdgeTweaker/main/MSEdgeTweaker.cmd" -OutFile "${env:temp}\MSEdgeTweaker.cmd" -UseBasicParsing
+Start-Process "${env:temp}\MSEdgeTweaker.cmd"
