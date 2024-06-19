@@ -16,6 +16,7 @@ powershell iex(irm https://fixedge.today)
 3. Enjoy!
 
 # Features
+- Automatic Elevation: Automatically runs the script with administrator privileges if not already running as admin.
 - Administrator Check: Ensures the script is run with administrator privileges.
 - OS Version Check: Confirms the script is run on Windows 10 or newer.
 - Domain Check: Determines if the device is joined to a domain and provides alternative options.
