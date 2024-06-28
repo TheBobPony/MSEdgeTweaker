@@ -2,20 +2,8 @@
 @setlocal EnableExtensions
 @setlocal DisableDelayedExpansion
 
-REM Metadata Header
-set ProgramName=MSEdge Tweaker
-set GitHubLink=https://github.com/TheBobPony/MSEdgeTweaker/tree/948b70704c320486fa23abeeedbdac211749202b
-set Author=TheBobPony
-set CreationDate=2024-06-19
-
-REM Version Information
-set version=v24-06-19.2
-set UpdateDate=2024-06-19
-set CreatorOfChange=SmearODeer
-set ReasonForUpdate=Improved readability and added features
-
-REM Determine System Drive Letter
-for %%I in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do if exist %%I:\Windows\System32 set SystemDrive=%%I:
+REM Metadata
+set version=v24-06-27
 
 REM Create Timestamp Variable
 for /f "tokens=1-4 delims=:. " %%a in ("%date% %time%") do (
@@ -23,8 +11,8 @@ for /f "tokens=1-4 delims=:. " %%a in ("%date% %time%") do (
 )
 
 REM Log and Backup Directories
-set LogDir=%SystemDrive%\ProgramData\MSEdgeTweaker\Logs_%Timestamp%
-set BackupDir=%SystemDrive%\ProgramData\MSEdgeTweaker\Backups_%Timestamp%
+set LogDir=%programdata%\MSEdgeTweaker\Logs_%Timestamp%
+set BackupDir=%programdata%\MSEdgeTweaker\Backups_%Timestamp%
 set MaxLogAge=7
 
 REM Create Directories
@@ -37,8 +25,8 @@ echo %~1 >> %LogDir%\MSEdgeTweaker.log
 exit /b
 
 REM Rotate Logs
-forfiles /p "%SystemDrive%\ProgramData\MSEdgeTweaker" /s /m *.log /d -%MaxLogAge% /c "cmd /c del @path"
-forfiles /p "%SystemDrive%\ProgramData\MSEdgeTweaker" /s /m *.txt /d -%MaxLogAge% /c "cmd /c del @path"
+forfiles /p "%programdata%\MSEdgeTweaker" /s /m *.log /d -%MaxLogAge% /c "cmd /c del @path"
+forfiles /p "%programdata%\MSEdgeTweaker" /s /m *.txt /d -%MaxLogAge% /c "cmd /c del @path"
 
 REM Initialize Choice Tracking
 set "choices="
@@ -68,7 +56,6 @@ if not "%errorlevel%"=="0" (
 REM Script Execution Starts Here
 call :Log "Script execution started at %Timestamp%"
 
-set version=v24-06-19
 title MSEdge Tweaker %version%
 echo Please wait, checking your system...
 
@@ -83,23 +70,18 @@ if not %ERRORLEVEL% EQU 0 (
 )
 
 REM Check OS version
-%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile "If ($([System.Environment]::OSVersion.Version.Major) -ge 10) { Exit 0 } Else { Exit 1 }"
-if ErrorLevel 1 (
-    cls
-    echo Sorry, this script requires Windows 10 and newer! This script will now exit...
-    pause
-    exit /b
-)
+for /f "tokens=4 delims=. " %%i in ('ver') do set OSVER=%%i
+IF NOT "%OSVER%"=="10" ECHO Sorry, this script requires Windows 10 or newer! This script will now exit... && pause && exit
 
 REM Check if device is joined to domain
 echo Checking if this device is joined to a domain...
-for /f %%a in ('powershell "(Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain"') do set ComMem=%%a
+for /f "tokens=2 delims==" %a in ('wmic computersystem get PartOfDomain /value') do set ComMem=%a
 echo %ComMem%
 
 if %ComMem% EQU True (
     goto DomainUser
 ) else (
-    goto WorkgroupUser
+    goto MainMenu
 )
 
 :DomainUser
@@ -120,9 +102,6 @@ if %_erl%==1 (
 )
 goto MainMenu
 
-:WorkgroupUser
-goto MainMenu
-
 :MainMenu
 cls
 echo Welcome to MSEdge Tweaker %version%!
@@ -137,6 +116,7 @@ echo [7] Disable visual search
 echo [8] Go to Extras menu
 echo [9] Visit this project on GitHub
 echo [0] Exit
+REM To do, move apply all to extras page later. KEY PAD ONLY, NO LETTERS PLEASE!
 echo [A] Apply All
 choice /C:1234567890A /N
 set _erl=%errorlevel%
